@@ -43,7 +43,7 @@ func (wp *WorkerPool) distributeJobs() {
 			return
 		default:
 			log.Println("Checking queue for jobs...")
-			job, err := wp.jobQueue.Pop()
+			job, err := wp.jobQueue.DequeueJob()
 			if err != nil {
 				log.Printf("Error popping job: %v", err)
 				time.Sleep(2 * time.Second)
@@ -63,7 +63,11 @@ func (wp *WorkerPool) distributeJobs() {
 				}
 			}
 			if !workerFound {
-				log.Println("No idle workers found!")
+				log.Printf("No idle workers, requeueing job %s", job.ID)
+				if err := wp.jobQueue.EnqueueJob(job); err != nil {
+					log.Printf("Failed to requeue job: %v", err)
+				}
+				time.Sleep(100 * time.Millisecond)
 			}
 		}
 	}
@@ -101,5 +105,5 @@ func (wp *WorkerPool) Stop() {
 
 func (wp *WorkerPool) SubmitJob(job *job.Job) error {
 	log.Printf("Submitting new job with id %s to queue", job.ID)
-	return wp.jobQueue.Push(job)
+	return wp.jobQueue.EnqueueJob(job)
 }

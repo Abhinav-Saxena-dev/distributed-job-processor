@@ -9,8 +9,8 @@ import (
 type Queue interface {
 	Length() int
 	isQueueJobsEmpty() bool
-	Push(job *job.Job) error
-	Pop() (*job.Job, error)
+	EnqueueJob(job *job.Job) error
+	DequeueJob() (*job.Job, error)
 	Peek() (*job.Job, error)
 }
 
@@ -37,7 +37,7 @@ func (queue *queue) isQueueJobsEmpty() bool {
 }
 
 // Push add element to the end of slice
-func (queue *queue) Push(job *job.Job) error {
+func (queue *queue) EnqueueJob(job *job.Job) error {
 	queue.mu.Lock()
 	defer queue.mu.Unlock()
 	if job == nil {
@@ -48,7 +48,7 @@ func (queue *queue) Push(job *job.Job) error {
 }
 
 // Pop Return first element of the slice
-func (queue *queue) Pop() (*job.Job, error) {
+func (queue *queue) DequeueJob() (*job.Job, error) {
 	queue.mu.Lock()
 	defer queue.mu.Unlock()
 	if queue.isQueueJobsEmpty() {

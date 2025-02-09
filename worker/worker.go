@@ -258,7 +258,7 @@ func (w *Worker) processDataJob(processJob *job.Job) error {
 //			return
 //		default:
 //			w.state = StateIdle
-//			processJob, err := w.jobQueue.Pop()
+//			processJob, err := w.jobQueue.DequeueJob()
 //			if err != nil {
 //				time.Sleep(time.Second)
 //				continue

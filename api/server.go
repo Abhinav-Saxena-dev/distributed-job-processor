@@ -36,8 +36,9 @@ func (s *JobServer) handleJobs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Type    job.JobType `json:"type"`
-		Payload interface{} `json:"payload"`
+		Type     job.JobType  `json:"type"`
+		Priority job.Priority `json:"priority"`
+		Payload  interface{}  `json:"payload"`
 	}
 
 	// Decode JSON from request body into our struct
@@ -49,7 +50,7 @@ func (s *JobServer) handleJobs(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Request recieved with type %s", req.Type)
 
 	// Create new job
-	newJob := job.NewJob(generateID(), req.Type, req.Payload)
+	newJob := job.NewJob(generateID(), req.Type, req.Priority, req.Payload)
 
 	// Submit job using WorkerPool method
 	if err := s.workerPool.SubmitJob(newJob); err != nil {

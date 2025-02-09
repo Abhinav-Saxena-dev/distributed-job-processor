@@ -9,6 +9,13 @@ import (
 
 type JobType string
 type JobStatus string
+type Priority int
+
+const (
+	LowPriority    Priority = 1
+	MediumPriority Priority = 2
+	HighPriority   Priority = 3
+)
 
 const (
 	EmailJob    JobType = "email"
@@ -32,10 +39,11 @@ type JobProgress struct {
 }
 
 type Job struct {
-	ID          string      // Changed from ID, TYPE to separate fields
-	Type        JobType     // Capitalized for export
-	Payload     interface{} // Fixed typo in Payload
-	JobProgress JobProgress // Think about using map here
+	ID          string
+	Type        JobType
+	Priority    Priority
+	Payload     interface{}
+	JobProgress JobProgress
 	CreatedAt   time.Time
 }
 
@@ -57,7 +65,7 @@ func (j *Job) Validate() error {
 	return nil
 }
 
-func NewJob(id string, jobType JobType, payload interface{}) *Job {
+func NewJob(id string, jobType JobType, priority Priority, payload interface{}) *Job {
 	jobProgress := JobProgress{
 		Status: StatusPending,
 	}
@@ -66,6 +74,7 @@ func NewJob(id string, jobType JobType, payload interface{}) *Job {
 		ID:          id,
 		Type:        jobType,
 		Payload:     payload,
+		Priority:    priority,
 		JobProgress: jobProgress,
 		CreatedAt:   time.Now(),
 	}

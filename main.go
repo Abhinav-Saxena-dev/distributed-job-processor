@@ -12,8 +12,14 @@ import (
 
 // In main.go
 func main() {
-	// Create queue
-	jobQueue := queue.NewQueue()
+	var jobQueue queue.Queue
+	usePriorityQueue := true
+
+	if usePriorityQueue {
+		jobQueue = queue.NewPriorityQueue()
+	} else {
+		jobQueue = queue.NewQueue()
+	}
 
 	// Create worker pool
 	pool := worker.NewWorkerPool(5, jobQueue)
@@ -31,7 +37,7 @@ func main() {
 			log.Fatal(err)
 		}
 	}()
-	
+
 	<-stop
 	log.Println("Shutting down...")
 
